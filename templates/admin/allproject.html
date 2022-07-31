@@ -1,0 +1,69 @@
+{% extends 'main/base.html' %}
+{% block content %}
+<main class="content">
+    <div class="container-fluid p-0">
+        <a href="{% url 'addproject' %}" class="btn btn-primary float-end mt-n1"><i class="fas fa-plus"></i> New project</a>
+        <div class="mb-3">
+            <h1 class="h3 d-inline align-middle">Projects</h1>
+        </div>
+
+        <div class="row">
+            {% if projects %}
+                {% for project in projects %}
+                    <div class="col-12 col-md-6 col-lg-3">
+                        <div class="card">
+                            {% if project.profile_image %}
+                            <img class="card-img-top" src="{{ project.profile_image.url }}" alt="Unsplash">
+                            {% endif%}
+                            
+                            <div class="card-header px-4 pt-4">
+                                <div class="card-actions float-end">
+                                    <div class="dropdown position-relative">
+                                        <a href="#" data-bs-toggle="dropdown" data-bs-display="static">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-horizontal align-middle"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-end">
+                                            <a class="dropdown-item" href="#">Finished</a>
+                                            <a class="dropdown-item" href="#">Edit Project</a>
+                                            <a class="dropdown-item" href="#">Cancele</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <h5 class="card-title mb-0">{{ project.title }}</h5>
+                                {% if project.status == "Done" %}
+                                    <div class="badge bg-success my-2">Finished</div>
+                                {% elif project.status == "Pending" %}
+                                    <div class="badge bg-info my-2">Pending</div>
+                                {% elif project.status == "Working" %}
+                                    <div class="badge bg-warning my-2">In progress</div>
+                                {% else %}
+                                    <div class="badge bg-danger my-2">Cancelled</div>
+                                {% endif %}
+                            </div>
+                            <div class="card-body px-4 pt-2">
+                                <p>{{ project.description|slice:":100" }}</p>
+                                {% for user in project.users %}
+                                    {% if user.profile_set %}
+                                        <img src="{{ user.profile_set.profile_image.url }}" class="rounded-circle me-1" alt="Avatar" width="28" height="28">
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item px-4 pb-4">
+                                    <p class="mb-2 font-weight-bold">Progress <span class="float-end">{{ project.progress }}%</span></p>
+                                    <div class="progress progress-sm">
+                                        <div class="progress-bar" role="progressbar" aria-valuenow="{{ project.progress }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ project.progress }}%;">
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <center><h4 class="h3 d-inline align-middle">No project added yet</h4></center>
+            {% endif %}
+        </div>
+    </div>
+</main>
+{% endblock %}

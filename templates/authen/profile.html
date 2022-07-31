@@ -1,0 +1,152 @@
+{% extends 'main/base.html' %}
+{% block content %}
+<main class="content">
+	<div class="container-fluid p-0">
+		<div class="mb-3">
+			<h1 class="h3 d-inline align-middle">Profile</h1>
+			{% include 'utils/alert.html' %}
+		</div>
+		<div class="row">
+			<div class="col-md-4 col-xl-3">
+				<div class="card mb-3">
+					<div class="card-header">
+						<h5 class="card-title mb-0">Profile Details</h5>
+					</div>
+					<div class="card-body text-center">
+						{% if profile.profile_image %}
+							<img src="{{ profile.profile_image.url }}" alt="{{ user.first_name }} {{ user.last_name }}" class="img-fluid rounded-circle mb-2" width="128" height="128"/>
+						{% endif %}
+						<h5 class="card-title mb-0">{{ user.first_name }} {{ user.last_name }}</h5>
+						<h6 class="card-title mb-0">{{ user.email }}</h6>
+						<div class="text-muted mb-2">{{ profile.workfield }}</div>
+					</div>
+					<hr class="my-0"/>
+					<div class="card-body">
+						<h5 class="h6 card-title">Skills</h5>
+						{% for skill in skills %}
+							<a href="" class="badge bg-primary me-1 my-1">{{ skill.title }}</a>
+						{% endfor %}
+					</div>
+					<hr class="my-0" />
+					<div class="card-body">
+						<h5 class="h6 card-title">About</h5>
+						<ul class="list-unstyled mb-0">
+							<li class="mb-1"><span data-feather="home" class="feather-sm me-1"></span> Lives in <a href="#">{{ profile.location }}</a></li>
+							<li class="mb-1"><span data-feather="phone-call" class="feather-sm me-1"></span> Phone Number <a href="#">{{ profile.number }}</a></li>
+						</ul>
+					</div>
+					<hr class="my-0" />
+					<div class="card-body">
+						<h5 class="h6 card-title">Elsewhere</h5>
+						<ul class="list-unstyled mb-0">
+							<li class="mb-1"><a href="{{ profile.tw_acc }}">Twitter</a></li>
+							<li class="mb-1"><a href="{{ profile.fb_acc }}">Facebook</a></li>
+							<li class="mb-1"><a href="{{ profile.Ig_acc }}">Instagram</a></li>
+							<li class="mb-1"><a href="{{ profile.git_acc }}">GitHub</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-4 col-xl-5">
+				<div class="card">
+					<div class="card-header">
+						<h5 class="card-title mb-0">Edit Profile</h5>
+					</div>
+					<div class="card-body h-100">
+						<div class="m-sm-4">
+							<form action="{% url 'profile' %}" method="POST" enctype="multipart/form-data">
+								{% csrf_token %}
+								<div class="mb-3">
+									<label class="form-label w-100">Profile Image</label>
+									<input type="file" name="imagefile" value="{{ profile.profile_image.url }}">
+								</div>
+								<div class="mb-3">
+									<label class="form-label">First Name</label>
+									<input class="form-control form-control-lg" type="text" name="firstname" value="{{ user.first_name }}" placeholder="Enter your first name"/>
+								</div>
+								<div class="mb-3">
+									<label class="form-label">Last Name</label>
+									<input class="form-control form-control-lg" type="text" name="lastname" value="{{ user.last_name }}" placeholder="Enter your last name"/>
+								</div>
+								<div class="mb-3">
+									<label class="form-label">Number</label>
+									<input class="form-control form-control-lg" type="phone" name="phone" value="{{ profile.number }}" placeholder="Enter your location"/>
+								</div>
+								<div class="mb-3">
+									<label class="form-label">Location</label>
+									<input class="form-control form-control-lg" type="address" name="location" value="{{ profile.location }}" placeholder="Enter your location"/>
+								</div>
+								<div class="mb-3">
+									<label class="form-label">Bio</label>
+									<textarea class="form-control" rows="2" name="bio" placeholder="Textarea" value="{{ profile.bio }}"></textarea>
+								</div>
+								<div class="mb-3">
+									<label class="form-label">Description</label>
+									<textarea class="form-control" rows="2" name="description" placeholder="Textarea" value="{{ profile.description }}"></textarea>
+								</div>
+								<div class="text-center mt-3">
+									<button type="submit" class="btn btn-lg btn-primary">Update Profile</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-md-4 col-xl-4">
+				<div class="card">
+					<div class="card-header">
+						<h5 class="card-title mb-0">Updates Social</h5>
+					</div>
+					<div class="card-body h-100">
+						<div class="m-sm-4">
+							<form action="{% url 'updatesocial' %}" method="POST">
+								{% csrf_token %}
+								<div class="mb-3">
+									<label class="form-label">Twitter</label>
+									<input class="form-control form-control-lg" type="text" name="twitter" value="{{ profile.tw_acc }}" placeholder="Enter your Twitter"/>
+								</div>
+								<div class="mb-3">
+									<label class="form-label">Facebook</label>
+									<input class="form-control form-control-lg" type="text" name="facebook" value="{{ profile.fb_acc }}" placeholder="Enter your Facebook"/>
+								</div>
+								<div class="mb-3">
+									<label class="form-label">Instagram</label>
+									<input class="form-control form-control-lg" type="text" name="instagram" value="{{ profile.Ig_acc }}" placeholder="Enter your Instagram"/>
+								</div>
+								<div class="mb-3">
+									<label class="form-label">GitHub</label>
+									<input class="form-control form-control-lg" type="text" name="github" value="{{ profile.git_acc }}" placeholder="Enter your GitHub"/>
+								</div>
+								<div class="text-center mt-3">
+									<button type="submit" class="btn btn-lg btn-primary">Update Social</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+				<div class="card">
+					<div class="card-header">
+						<h5 class="card-title mb-0">Add Skills</h5>
+					</div>
+					<div class="card-body h-100">
+						<div class="m-sm-4">
+							<form action="{% url 'add_skill' %}" method="POST">
+								{% csrf_token %}
+								<div class="mb-3">
+									<label class="form-label">Skills Name</label>
+									<input class="form-control form-control-lg" type="text" name="skill" placeholder="Enter your skills"/>
+								</div>
+								<div class="text-center mt-3">
+									<button type="submit" class="btn btn-lg btn-primary">Add To Profile</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+</main>
+{% endblock %}

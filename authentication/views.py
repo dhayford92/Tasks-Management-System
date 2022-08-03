@@ -30,7 +30,7 @@ class Login(View):
 
 def logout_user(request):
     logout(request)
-    return HttpResponseRedirect('/')
+    return HttpResponseRedirect('main')
 
 
 
@@ -78,32 +78,16 @@ class ProfileView(View):
         return render(request, 'authen/profile.html', context)
     
     def post(self, request):
-        firstname = request.POST['firstname']
-        lastname = request.POST['lastname']
-        phone = request.POST['phone']
-        location = request.POST['location']
-        bio = request.POST['bio']
-        description = request.POST['description']
-        
-        if request.FILES['imagefile']:
-            imagefile = request.FILES['imagefile']
-        
+        skill = request.POST['skill']
         try:
             user = User.objects.get(id=request.user.id)
-            user.first_name = firstname
-            user.last_name = lastname
-            user.save()
-            profile = Profile.objects.get(user=user)
-            profile.number = phone
-            profile.profile_image = imagefile
-            profile.location = location
-            profile.bio = bio
-            profile.description = description
-            profile.save()
-            messages.success(request, 'Profile Updated Successfully')
+            sk = Skills.objects.create(user=user, title=skill)
+            sk.save()
+            messages.success(request, 'Skills Added Successfully')
         except:
-            messages.error(request, 'Profile Updated Failed')
+            messages.error(request, 'Error adding skills')
         return HttpResponseRedirect('profile')
+    
     
     
 
@@ -128,14 +112,107 @@ def updateSocial(request):
 
 
 
-def addSkills(request):
+def addBioNProfile(request):
     if request.method == "POST":
-        skill = request.POST['skill']
+        bio = request.POST['bio']
+        if request.FILES['imagefile']:
+            imagefile = request.FILES['imagefile']
         try:
             user = User.objects.get(id=request.user.id)
-            sk = Skills.objects.create(user=user, title=skill)
-            sk.save()
-            messages.success(request, 'Skills Added Successfully')
+            profile = Profile.objects.get(user=user)
+            profile.profile_image = imagefile
+            profile.bio = bio
+            profile.save()
+            messages.success(request, 'Public info Added Successfully')
         except:
-            messages.error(request, 'Error adding skills')
-        return HttpResponseRedirect('profile')
+            messages.error(request, 'Error editing Public info')
+        return HttpResponseRedirect('settings')
+    
+    
+
+class SettingsView(View):
+    def get(self, request):
+        user = User.objects.get(id=request.user.id)
+        profile = Profile.objects.get(user=user)
+        skills = Skills.objects.filter(user=user)
+        context = {
+            'profile': profile,
+            'user': user,
+            'skills': skills
+        }
+        return render(request, 'main/settings.html', context)
+    
+    def post(self, request):
+        firstname = request.POST['firstname']
+        lastname = request.POST['lastname']
+        phone = request.POST['phone']
+        location = request.POST['location']
+        description = request.POST['description']
+        
+        try:
+            user = User.objects.get(id=request.user.id)
+            user.first_name = firstname
+            user.last_name = lastname
+            user.save()
+            profile = Profile.objects.get(user=user)
+            profile.number = phone
+            profile.location = location
+            profile.description = description
+            profile.save()
+            messages.success(request, 'Private info Updated Successfully')
+        except:
+            messages.error(request, 'Private info Updated Failed')
+        return HttpResponseRedirect('settings')
+    
+    
+class AllUsers(View):
+    def get(self, request):
+        user = request.GET.get('user')
+        users = User.objects.all()
+        profiles = Profile.objects.all()
+        if user == '':
+            profile = Profile.objects.get(user=request.user)
+        else:
+            for usid in users:
+                usID = usid.id
+            profile = Profile.objects.get(user__id__exact=usID)
+           
+        context = {
+            'profiles': profiles,
+            'profile': profile
+        }
+        return render(request, 'admin/allusers.html', context)
+    
+    
+    
+class RegisterUser(View):
+    def get(self, request):
+        return render(request, 'authen/addusers.html')
+    
+    def post(self, request):
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        workfield = request.POST.get('workfield')
+        position = request.POST.get('position')
+        password = request.POST.get('password')
+        conpassword = request.POST.get('conpassword')
+        
+        if User.objects.filter(email=email).exists():
+            messages.warning(request, f'This mail: {email} already exists')
+        elif User.objects.filter(username=username).exists():
+            messages.warning(request, f'This username: {username} already exists')
+        elif password == conpassword:
+            user = User.objects.create_user(username=username, password=password, email=email)
+            if position == "admin":
+                user.is_superuser = True
+            else:
+                user.is_staff = True
+            user.save()
+            profile = Profile.objects.get(user=user)
+            profile.workfield = workfield
+            profile.save()
+            messages.success(request, 'New user added successfully')
+        else:
+            messages.error(request, 'Password do not match')
+        return HttpResponseRedirect('addusers')
+    

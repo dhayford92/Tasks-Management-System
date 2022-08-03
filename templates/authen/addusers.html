@@ -1,0 +1,59 @@
+{% extends 'main/base.html' %}
+{% block content %}
+<main class="content">
+    <div class="container-fluid p-0">
+        <div class="mb-3">
+            <h1 class="h3 d-inline align-middle">Add New Members</h1>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <form action="{% url 'addusers' %}" method="post">
+                        {% csrf_token %}
+                        {% include 'utils/alert.html' %}
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="mb-3 col-md-6">
+                                    <label class="form-label" for="inputEmail4">Username</label>
+                                    <input type="text" class="form-control" id="inputEmail4" name="username" placeholder="Add username">
+                                </div>
+                                <div class="mb-3 col-md-6">
+                                    <label class="form-label" for="inputState">Position</label>
+                                    <select id="inputState" class="form-control" name="position">
+                                        <option value="admin" selected="">Admin</option>
+                                        <option value="staff">Staff</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="mb-3 col-md-6">
+                                    <label class="form-label" for="inputEmail4">Email</label>
+                                    <input type="email" class="form-control" id="inputEmail4" name="email" placeholder="example@pms.com">
+                                </div>
+                                <div class="mb-3 col-md-6">
+                                    <label class="form-label" for="inputEmail4">Work Field</label>
+                                    <input type="text" class="form-control" id="inputEmail4" name="workfield" placeholder="Add Work Field">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="mb-3 col-md-6">
+                                    <label class="form-label" for="inputEmail4">Password</label>
+                                    <input type="password" class="form-control" id="inputEmail4" name="password" placeholder="Enter Password">
+                                </div>
+                                <div class="mb-3 col-md-6">
+                                    <label class="form-label" for="inputEmail4">Confirm Password</label>
+                                    <input type="password" class="form-control" id="inputEmail4" name="conpassword" placeholder="Enter Password">
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <button type="submit" class="btn btn-primary">Register User</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}

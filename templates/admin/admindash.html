@@ -28,16 +28,15 @@
                   <div class="card-body">
                     <div class="row">
                       <div class="col mt-0">
-                        <h5 class="card-title">Visitors</h5>
+                        <h5 class="card-title">Assign Tasks</h5>
                       </div>
-
                       <div class="col-auto">
                         <div class="stat text-primary">
-                          <i class="align-middle" data-feather="users"></i>
+                          <i class="align-middle" data-feather="list"></i>
                         </div>
                       </div>
                     </div>
-                    <h1 class="mt-1 mb-3">{{ customer_count }}</h1>
+                    <h1 class="mt-1 mb-3">{{ mytask_count }}</h1>
                   </div>
                 </div>
               </div>
@@ -105,26 +104,53 @@
                   <th class="d-none d-xl-table-cell">Start Date</th>
                   <th class="d-none d-xl-table-cell">End Date</th>
                   <th>Status</th>
-                  <th class="d-none d-md-table-cell">Assignee</th>
+                  <th>Progress</th>
+                  <th class="d-none d-md-table-cell">Action</th>
                 </tr>
               </thead>
               <tbody>
                 {% for project in all_project %}
-                <tr>
-                  <td>{{ project.title }}</td>
-                  <td class="d-none d-xl-table-cell">{{ project.start_date }}</td>
-                  <td class="d-none d-xl-table-cell">{{ project.due_date }}</td>
-                  {% if project.status == 'Done' %}
-                    <td><span class="badge bg-success">Done</span></td>
-                  {% elif project.status == 'Pending' %}
-                    <td><span class="badge bg-primary">Pending</span></td>
-                  {% elif project.status == 'Working' %}
-                    <td><span class="badge bg-warning">In progress</span></td>
-                  {% else %}
-                    <td><span class="badge bg-danger">Cancelled</span></td>
-                  {% endif %}
-                  <a href="" class="btn btn-danger">View Details</a>
-                </tr>
+                {% if project.status != "Cancel" %}
+                  <tr>
+                    <td>{{ project.title }}</td>
+                    <td class="d-none d-xl-table-cell">{{ project.start_date }}</td>
+                    <td class="d-none d-xl-table-cell">{{ project.due_date }}</td>
+                    {% if project.status == 'Done' %}
+                      <td><span class="badge bg-success">Done</span></td>
+                      <td>
+                        <div class="d-flex flex-column w-100">
+                          <span class="me-2 mb-1 text-muted">{{ project.progress }}%</span>
+                          <div class="progress progress-sm bg-success-light w-100">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: {{ project.progress }}%;"></div>
+                          </div>
+                        </div>
+                      </td>
+                    {% elif project.status == 'Pending' %}
+                      <td><span class="badge bg-primary">Pending</span></td>
+                      <td>
+                        <div class="d-flex flex-column w-100">
+                          <span class="me-2 mb-1 text-muted">{{ project.progress }}%</span>
+                          <div class="progress progress-sm bg-primary-light w-100">
+                            <div class="progress-bar bg-primary" role="progressbar" style="width: {{ project.progress }}%;"></div>
+                          </div>
+                        </div>
+                      </td>
+                    {% elif project.status == 'Working' %}
+                      <td><span class="badge bg-warning">In progress</span></td>
+                      <td>
+                        <div class="d-flex flex-column w-100">
+                          <span class="me-2 mb-1 text-muted">{{ project.progress }}%</span>
+                          <div class="progress progress-sm bg-warning-light w-100">
+                            <div class="progress-bar bg-warning" role="progressbar" style="width: {{ project.progress }}%;"></div>
+                          </div>
+                        </div>
+                      </td>
+                    {% endif %}
+                    <td class="d-none d-xl-table-cell">
+                      <a href="#" class="btn btn-light">View</a>
+                    </td>
+                  </tr>
+                {% endif %}
                 {% endfor %}
               </tbody>
             </table>

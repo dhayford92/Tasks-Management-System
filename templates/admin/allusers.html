@@ -1,0 +1,141 @@
+{% extends 'main/base.html' %}
+{% block content %}
+<main class="content">
+    <div class="container-fluid p-0">
+        {% if request.user.is_superuser %}
+            <a href="{% url 'addusers' %}" class="btn btn-primary float-end mt-n1"><i class="fas fa-plus"></i> Add New User</a>
+        {% endif %}
+        <div class="mb-3">
+            <h1 class="h3 d-inline align-middle">All Users</h1>
+        </div>
+        {% include 'utils/alert.html' %}
+        <div class="row">
+            <div class="col-xl-8">
+                <div class="card">
+                    <div class="card-header pb-0">
+                        <h5 class="card-title mb-0">Clients</h5>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-striped" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Name</th>
+                                    <th>Work Type</th>
+                                    <th>Email</th>
+                                    <th>Position</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for profile in profiles %}
+                                <tr>
+                                    {% if profile.profile_image.url %}
+                                        <td><img src="{{ profile.profile_image.url }}" width="32" height="32" class="rounded-circle my-n1" alt="Avatar"></td>
+                                    {% else %}
+                                        <td>###</td>
+                                    {% endif %}
+                                    {% if profile.user.first_name %}
+                                        <td>{{ profile.user.first_name }} {{ profile.user.last_name }}</td>
+                                    {% else %}
+                                        <td>{{ profile.user.username }}</td>
+                                    {% endif %}
+                                    <td>{{ profile.workfield }}</td>
+                                    <td>{{ profile.user.email }}</td>
+                                    {% if profile.user.is_superuser %}
+                                        <td><span class="badge bg-success">Admin</span></td>
+                                    {% else %}
+                                        <td><span class="badge bg-primary">Staff</span></td>
+                                    {% endif %}
+                                    <td class="d-none d-xl-table-cell">
+                                        <form action="{% url 'allusers' %}" method="get">
+                                            <input type="hidden" name="user" value="{{ profile.user }}">
+                                            <button type="submit" class="btn btn-light">View</a>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% if profile %}
+                <div class="col-xl-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-actions float-end">
+                                <div class="dropdown position-relative">
+                                    <a href="#"  data-bs-display="static" aria-expanded="false" class="">
+                                        <i class="align-middle" data-feather="message-square"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <h5 class="card-title mb-0">{{ profile.user.first_name }} {{ profile.user.last_name }}</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-0">
+                                {% if profile.profile_image.url %}
+                                    <div class="col-sm-3 col-xl-12 col-xxl-3 text-center">    
+                                        <img src="{{ profile.profile_image.url }}" width="64" height="64" class="rounded-circle mt-2" alt="{{ profile.user.first_name }} {{ profile.user.last_name }}">
+                                    </div>
+                                {% endif %}
+                                <div class="col-sm-9 col-xl-12 col-xxl-9">
+                                    <strong>About me</strong>
+                                    <p>{{ profile.bio }}</p>
+                                </div>
+                            </div>
+
+                            <table class="table table-sm mt-2 mb-4">
+                                <tbody>
+                                    <tr>
+                                        <th>Name</th>
+                                        <td>{{ profile.user.first_name }} {{ profile.user.last_name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Work Field</th>
+                                        <td>{{ profile.workfield }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Email</th>
+                                        <td>{{ profile.user.email }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Phone</th>
+                                        <td>+{{ profile.number }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Position</th>
+                                        {% if profile.user.is_superuser %}
+                                            <td><span class="badge bg-success">Admin</span></td>
+                                        {% else %}
+                                            <td><span class="badge bg-primary">Staff</span></td>
+                                        {% endif %}
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <strong>Personal Info</strong>
+
+                            <ul class="timeline mt-2 mb-0">
+                                <li class="timeline-item">
+                                    <strong>Description</strong>
+                                    <span class="float-end text-muted text-sm"></span>
+                                    <p>{{ profile.description }}</p>
+                                </li>
+                                <li class="timeline-item">
+                                    <strong>Location</strong>
+                                    <span class="float-end text-muted text-sm"></span>
+                                    <p>{{ profile.location }}</p>
+                                </li>
+                            </ul>
+
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+    </div>
+</main>
+{% endblock %}

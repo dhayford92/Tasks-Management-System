@@ -7,7 +7,7 @@ status = (
     ('Pending', 'Pending'),
     ('Working', 'Working'),
     ('Done', 'Done'),
-    ('Cancelled', 'Cancelled'),
+    ('Cancel', 'Cancel'),
 )
 
 due = (

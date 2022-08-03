@@ -1,0 +1,75 @@
+{% extends 'main/base.html' %}
+{% block content %}
+<main class="content">
+    <div class="container-fluid p-0">
+        <div class="mb-3">
+            <h1 class="h3 d-inline align-middle">Add Tasks</h1>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Add Task to {{ project.title }}</h5>
+                        <h6 class="card-subtitle text-muted">Add task to the project</h6>
+                    </div>
+                    <form action="{% url 'addtask' project.id %}" method="post">
+                        {% csrf_token %}
+                        {% include 'utils/alert.html' %}
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="mb-3 col-md-6">
+                                    <label class="form-label" for="inputEmail4">Title</label>
+                                    <input type="text" class="form-control" id="inputEmail4" name="title" placeholder="Tasks title">
+                                </div>
+                                <div class="mb-3 col-md-6">
+                                    <label class="form-label" for="inputState">Priority</label>
+                                    <select id="inputState" class="form-control" name="prior">
+                                        {% for pror, key in priors %}
+                                            <option value="{{ pror }}" selected="">{{ key }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="mb-3 col-md-3">
+                                    <label class="form-label" for="inputState">Status</label>
+                                    <select id="inputState" class="form-control" name="status">
+                                        {% for key, value in status %}
+                                            <option name="stat" value="{{ key }}" selected="">{{ value }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="mb-3 col-md-3">
+                                    <label class="form-label" for="inputState">Due</label>
+                                    <select id="inputState" class="form-control" name="due">
+                                        {% for key, value in dues %}
+                                            <option name="stat" value="{{ key }}" selected="">{{ value }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="mb-3 col-md-2">
+                                    <label class="form-label" for="inputState">Members</label>
+                                    {% for user in project.users.all %}
+                                    <label class="form-check m-0">
+                                        <input type="checkbox" name="userlist[]" value="{{ user.id }}" class="form-check-input">
+                                        {% if user.first_name == '' %}
+                                            <span class="form-check-label">{{ user.username }}</span>
+                                        {% else %}
+                                            <span class="form-check-label">{{ user.first_name }} {{ user.last_name }}</span>
+                                        {% endif %}
+                                    </label>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <button type="submit" class="btn btn-primary">Add Task</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}

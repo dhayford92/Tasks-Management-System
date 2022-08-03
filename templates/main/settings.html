@@ -1,3 +1,5 @@
+{% extends 'main/base.html' %}
+{% block content %}
 <main class="content">
     <div class="container-fluid p-0">
 
@@ -18,23 +20,8 @@
                         <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#password" role="tab" aria-selected="false">
                             Password
                         </a>
-                        <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#" role="tab" aria-selected="false">
-                            Privacy and safety
-                        </a>
-                        <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#" role="tab" aria-selected="false">
-                            Email notifications
-                        </a>
-                        <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#" role="tab" aria-selected="false">
-                            Web notifications
-                        </a>
-                        <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#" role="tab" aria-selected="false">
-                            Widgets
-                        </a>
-                        <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#" role="tab" aria-selected="false">
-                            Your data
-                        </a>
-                        <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#" role="tab" aria-selected="false">
-                            Delete account
+                        <a class="list-group-item list-group-item-action" data-bs-toggle="list" href="#social" role="tab" aria-selected="false">
+                            Social Account
                         </a>
                     </div>
                 </div>
@@ -50,29 +37,29 @@
                                 <h5 class="card-title mb-0">Public info</h5>
                             </div>
                             <div class="card-body">
-                                <form>
+                                <form action="{% url 'addbioprofile' %}" method="POST" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    {% include 'utils/alert.html' %}
                                     <div class="row">
                                         <div class="col-md-8">
                                             <div class="mb-3">
                                                 <label class="form-label" for="inputUsername">Username</label>
-                                                <input type="text" class="form-control" id="inputUsername" placeholder="Username">
+                                                <input type="text" class="form-control" id="inputUsername" value={{ user.username }} placeholder="Username" disable>
                                             </div>
                                             <div class="mb-3">
                                                 <label class="form-label" for="inputUsername">Biography</label>
-                                                <textarea rows="2" class="form-control" id="inputBio" placeholder="Tell something about yourself"></textarea>
+                                                <textarea rows="2" class="form-control" name="bio" id="inputBio" placeholder="Tell something about yourself"></textarea>
                                             </div>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="text-center">
-                                                <img alt="Charles Hall" src="img/avatars/avatar.jpg" class="rounded-circle img-responsive mt-2" width="128" height="128">
+                                                <img alt="Charles Hall" src="{{ profile.profile_image.url }}" class="rounded-circle img-responsive mt-2" width="128" height="128">
                                                 <div class="mt-2">
                                                     <span class="btn btn-primary"><i class="fas fa-upload"></i> Upload</span>
                                                 </div>
-                                                <small>For best results, use an image at least 128px by 128px in .jpg format</small>
                                             </div>
                                         </div>
                                     </div>
-
                                     <button type="submit" class="btn btn-primary">Save changes</button>
                                 </form>
 
@@ -85,45 +72,34 @@
                                 <h5 class="card-title mb-0">Private info</h5>
                             </div>
                             <div class="card-body">
-                                <form>
+                                <form action="{% url 'settings' %}" method="POST" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    {% include 'utils/alert.html' %}
                                     <div class="row">
                                         <div class="mb-3 col-md-6">
                                             <label class="form-label" for="inputFirstName">First name</label>
-                                            <input type="text" class="form-control" id="inputFirstName" placeholder="First name">
+                                            <input type="text" class="form-control" id="inputFirstName" placeholder="First name" name="firstname" value="{{ user.first_name }}">
                                         </div>
                                         <div class="mb-3 col-md-6">
                                             <label class="form-label" for="inputLastName">Last name</label>
-                                            <input type="text" class="form-control" id="inputLastName" placeholder="Last name">
+                                            <input type="text" class="form-control" id="inputLastName" placeholder="Last name" name="lastname" value="{{ user.last_name }}">
                                         </div>
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label" for="inputEmail4">Email</label>
-                                        <input type="email" class="form-control" id="inputEmail4" placeholder="Email">
+                                        <input type="email" class="form-control" id="inputEmail4" placeholder="Email" value="{{ user.email }}" disable>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label" for="inputAddress">Phone Number</label>
+                                        <input type="phone" class="form-control" id="inputAddress" name="phone" value="{{ profile.number }}" placeholder="1234 Main St">
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label" for="inputAddress">Address</label>
-                                        <input type="text" class="form-control" id="inputAddress" placeholder="1234 Main St">
+                                        <input type="address" class="form-control" id="inputAddress" name="location" value="{{ profile.location }}" placeholder="1234 Main St">
                                     </div>
                                     <div class="mb-3">
-                                        <label class="form-label" for="inputAddress2">Address 2</label>
-                                        <input type="text" class="form-control" id="inputAddress2" placeholder="Apartment, studio, or floor">
-                                    </div>
-                                    <div class="row">
-                                        <div class="mb-3 col-md-6">
-                                            <label class="form-label" for="inputCity">City</label>
-                                            <input type="text" class="form-control" id="inputCity">
-                                        </div>
-                                        <div class="mb-3 col-md-4">
-                                            <label class="form-label" for="inputState">State</label>
-                                            <select id="inputState" class="form-control">
-                                                <option selected="">Choose...</option>
-                                                <option>...</option>
-                                            </select>
-                                        </div>
-                                        <div class="mb-3 col-md-2">
-                                            <label class="form-label" for="inputZip">Zip</label>
-                                            <input type="text" class="form-control" id="inputZip">
-                                        </div>
+                                        <label class="form-label" for="inputUsername">Description</label>
+                                        <textarea rows="2" class="form-control" name="description" id="inputBio" placeholder="Tell something about yourself"></textarea>
                                     </div>
                                     <button type="submit" class="btn btn-primary">Save changes</button>
                                 </form>
@@ -136,7 +112,6 @@
                         <div class="card">
                             <div class="card-body">
                                 <h5 class="card-title">Password</h5>
-
                                 <form>
                                     <div class="mb-3">
                                         <label class="form-label" for="inputPasswordCurrent">Current password</label>
@@ -157,9 +132,40 @@
                             </div>
                         </div>
                     </div>
+                    <div class="tab-pane fade" id="social" role="tabpanel">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Update Social Connection</h5>
+                                <form action="{% url 'updatesocial' %}" method="POST">
+                                    {% csrf_token %}
+                                    <div class="mb-3">
+                                        <label class="form-label">Twitter</label>
+                                        <input class="form-control form-control-lg" type="text" name="twitter" value="{{ profile.tw_acc }}" placeholder="Enter your Twitter"/>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Facebook</label>
+                                        <input class="form-control form-control-lg" type="text" name="facebook" value="{{ profile.fb_acc }}" placeholder="Enter your Facebook"/>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Instagram</label>
+                                        <input class="form-control form-control-lg" type="text" name="instagram" value="{{ profile.Ig_acc }}" placeholder="Enter your Instagram"/>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">GitHub</label>
+                                        <input class="form-control form-control-lg" type="text" name="github" value="{{ profile.git_acc }}" placeholder="Enter your GitHub"/>
+                                    </div>
+                                    <div class="text-center mt-3">
+                                        <button type="submit" class="btn btn-lg btn-primary">Update Social</button>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
     </div>
 </main>
+{% endblock %}

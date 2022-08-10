@@ -36,10 +36,10 @@
 
                                 <h5 class="card-title mb-0">Public info</h5>
                             </div>
+                            {% include 'utils/alert.html' %}
                             <div class="card-body">
                                 <form action="{% url 'addbioprofile' %}" method="POST" enctype="multipart/form-data">
                                     {% csrf_token %}
-                                    {% include 'utils/alert.html' %}
                                     <div class="row">
                                         <div class="col-md-8">
                                             <div class="mb-3">
@@ -48,15 +48,19 @@
                                             </div>
                                             <div class="mb-3">
                                                 <label class="form-label" for="inputUsername">Biography</label>
-                                                <textarea rows="2" class="form-control" name="bio" id="inputBio" placeholder="Tell something about yourself"></textarea>
+                                                {% if profile.bio %}
+                                                    <textarea rows="2" class="form-control" name="bio" id="inputBio" placeholder="Tell something about yourself" value="{{ profile.bio }}">{{ profile.bio }}</textarea>
+                                                {% else %}
+                                                    <textarea rows="2" class="form-control" name="bio" id="inputBio" placeholder="Tell something about yourself"></textarea>
+                                                {% endif %}
                                             </div>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="text-center">
-                                                <img alt="Charles Hall" src="{{ profile.profile_image.url }}" class="rounded-circle img-responsive mt-2" width="128" height="128">
-                                                <div class="mt-2">
+                                                <img alt="{{ user.first_name }} {{ user.last_name }}" src="{{ profile.profile_image.url }}" class="rounded-circle img-responsive mt-2" width="128" height="128">
+                                                {% comment %} <div class="mt-2">
                                                     <span class="btn btn-primary"><i class="fas fa-upload"></i> Upload</span>
-                                                </div>
+                                                </div> {% endcomment %}
                                             </div>
                                         </div>
                                     </div>
@@ -74,7 +78,6 @@
                             <div class="card-body">
                                 <form action="{% url 'settings' %}" method="POST" enctype="multipart/form-data">
                                     {% csrf_token %}
-                                    {% include 'utils/alert.html' %}
                                     <div class="row">
                                         <div class="mb-3 col-md-6">
                                             <label class="form-label" for="inputFirstName">First name</label>
@@ -99,11 +102,14 @@
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label" for="inputUsername">Description</label>
-                                        <textarea rows="2" class="form-control" name="description" id="inputBio" placeholder="Tell something about yourself"></textarea>
+                                        {% if profile.description %}
+                                            <textarea rows="2" class="form-control" name="description" id="inputBio" value="{{ profile.description }}" placeholder="Tell something about yourself">{{ profile.description }}</textarea>
+                                        {% else %}
+                                            <textarea rows="2" class="form-control" name="description" id="inputBio" placeholder="Tell something about yourself"></textarea>
+                                        {% endif %}
                                     </div>
                                     <button type="submit" class="btn btn-primary">Save changes</button>
                                 </form>
-
                             </div>
                         </div>
 
@@ -112,19 +118,20 @@
                         <div class="card">
                             <div class="card-body">
                                 <h5 class="card-title">Password</h5>
-                                <form>
+                                <form action="{% url 'change-password' %}" method="post">
+                                    {% csrf_token %}
                                     <div class="mb-3">
                                         <label class="form-label" for="inputPasswordCurrent">Current password</label>
-                                        <input type="password" class="form-control" id="inputPasswordCurrent">
+                                        <input type="password" class="form-control" id="inputPasswordCurrent" name="password">
                                         <small><a href="#">Forgot your password?</a></small>
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label" for="inputPasswordNew">New password</label>
-                                        <input type="password" class="form-control" id="inputPasswordNew">
+                                        <input type="password" class="form-control" id="inputPasswordNew" name="newpassword">
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label" for="inputPasswordNew2">Verify password</label>
-                                        <input type="password" class="form-control" id="inputPasswordNew2">
+                                        <input type="password" class="form-control" id="inputPasswordNew2" name="conpassword">
                                     </div>
                                     <button type="submit" class="btn btn-primary">Save changes</button>
                                 </form>

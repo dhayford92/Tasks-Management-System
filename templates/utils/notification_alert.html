@@ -1,0 +1,77 @@
+<li class="nav-item dropdown">
+    <a class="nav-icon dropdown-toggle" href="#" id="alertsDropdown" data-bs-toggle="dropdown">
+      <div class="position-relative">
+        <i class="align-middle" data-feather="bell"></i>
+        <span class="indicator">{{  notifications.count }}</span>
+      </div>
+    </a>
+    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end py-0" aria-labelledby="alertsDropdown">
+      <div class="dropdown-menu-header">
+        {{  notifications.count }} New Notifications
+      </div>
+      <div class="list-group">
+        {% for notification in notifications %}
+        {% if notification.project %}
+            {% if notification.type == 1 %}
+                <a href="#" class="list-group-item">
+                    <div class="row g-0 align-items-center">
+                        <div class="col-2">
+                        <i class="text-success" data-feather="bell"></i>
+                        </div>
+                        <div class="col-10">
+                        <div class="text-dark">{{ notification.title }} - Completed</div>
+                        <div class="text-muted small mt-1">{{ notification.message }}</div>
+                        <div class="text-muted small mt-1">{{ notification.created_on }}</div>
+                        </div>
+                    </div>
+                </a>
+            {% elif notification.type == 2 %}
+                <a href="#" class="list-group-item">
+                    <div class="row g-0 align-items-center">
+                        <div class="col-2">
+                        <i class="text-warning" data-feather="bell"></i>
+                        </div>
+                        <div class="col-10">
+                        <div class="text-dark">{{ notification.title }}</div>
+                        <div class="text-muted small mt-1">{{ notification.message }}</div>
+                        <div class="text-muted small mt-1">{{ notification.created_on }}</div>
+                        </div>
+                    </div>
+                </a>
+            {% endif %}
+        {% else %}
+            {% if notification.type == 1 %}
+                <a href="#" class="list-group-item">
+                    <div class="row g-0 align-items-center">
+                        <div class="col-2">
+                        <i class="text-success" data-feather="book-open"></i>
+                        </div>
+                        <div class="col-10">
+                            <div class="text-dark">{{ notification.title }} - Completed</div>
+                            <div class="text-muted small mt-1">{{ notification.message }}</div>
+                            <div class="text-muted small mt-1">{{ notification.created_on }}</div>
+                        </div>
+                    </div>
+                </a>
+            {% elif notification.type == 2 %}
+                <a href="#" class="list-group-item">
+                    <div class="row g-0 align-items-center">
+                        <div class="col-2">
+                        <i class="text-warning" data-feather="book-open"></i>
+                        </div>
+                        <div class="col-10">
+                            <div class="text-dark">{{ notification.title }}</div>
+                            <div class="text-muted small mt-1">{{ notification.message }}</div>
+                            <div class="text-muted small mt-1">{{ notification.created_on }}</div>
+                        </div>
+                    </div>
+                </a>
+            {% endif %}
+        {% endif %}
+        {% endfor %}
+      </div>
+      <div class="dropdown-menu-footer">
+        <a href="{% url 'chats' %}" class="text-muted">Show all notifications</a>
+      </div>
+    </div>
+  </li>

@@ -6,7 +6,7 @@
         <div class="mb-3">
             <h1 class="h3 d-inline align-middle">Edit Projects</h1>
         </div>
-
+        {% include 'utils/alert.html' %}
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
@@ -14,25 +14,30 @@
                         <h5 class="card-title">Edit Project Form</h5>
                         <h6 class="card-subtitle text-muted">Make changes to your project here</h6>
                     </div>
-                    <form>
+                    <form action="{% url 'edit-project' project.id %}" method="post">
+                        {% csrf_token %}
                         <div class="card-body">
                             <div class="row">
                                 <div class="mb-3 col-md-6">
                                     <label class="form-label" for="inputEmail4">Title</label>
-                                    <input type="text" class="form-control" id="inputEmail4" value="{{ project.title }}" placeholder="Project title">
+                                    <input type="text" class="form-control" id="inputEmail4" name="title" value="{{ project.title }}" placeholder="Project title">
                                 </div>
                                 <div class="mb-3 col-md-6">
                                     <label class="form-label" for="inputState">Priority</label>
                                     <select id="inputState" class="form-control" name="prior">
-                                        {% for pror, key in priors %}
-                                            <option value="{{ pror }}" selected="">{{ key }}</option>
+                                        {% for key, value in priors %}
+                                        {% if value == project.priority %}
+                                            <option value="{{ key }}" selected="">{{ value }}</option>
+                                        {% else %}
+                                            <option value="{{ key }}">{{ value }}</option>
+                                        {% endif %}
                                         {% endfor %}
                                     </select>
                                 </div>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label w-100">File input</label>
-                                {% if project.profile_image %}
+                                <label class="form-label w-100">File input : ( {{ project.profile_image }} )</label>
+                                {% if project.profile_image.url %}
                                     <input type="file" name="imagefile" value="{{ project.profile_image.url }}">
                                 {% else %}
                                     <input type="file" name="imagefile">
@@ -40,20 +45,24 @@
                             </div>
                             <div class="row">
                                 <div class="mb-3 col-md-5">
-                                    <label class="form-label" for="inputCity">Start Date</label>
-                                    <input type="date" name="startdate" value="{{ project.start_date }}" class="form-control" id="inputCity" placeholder="24/01/2000">
+                                    <label class="form-label" for="inputCity">Start Date | {{ project.start_date|date:"d/m/Y" }}</label>
+                                    <input type="date" name="startdate" value="{{ project.start_date|date:"d/m/Y" }}" class="form-control" id="inputCity">
                                 </div>
                                 <div class="mb-3 col-md-5">
-                                    <label class="form-label" for="inputCity">End Date</label>
-                                    <input type="date" name="enddate" value="{{ project.due_date }}" class="form-control" id="inputCity" placeholder="24/01/2000">
+                                    <label class="form-label" for="inputCity">End Date | {{ project.due_date|date:"d/m/Y" }}</label>
+                                    <input type="date" name="enddate" value="{{ project.due_date|date:"d/m/Y" }}" class="form-control" id="inputCity">
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="mb-3 col-md-3">
                                     <label class="form-label" for="inputState">Status</label>
-                                    <select id="inputState" class="form-control">
+                                    <select id="inputState" class="form-control" name="stat">
                                         {% for key, value in status %}
-                                            <option name="stat" value="{{ key }}" selected="">{{ value }}</option>
+                                        {% if value == project.status %}
+                                            <option value="{{ key }}" selected="">{{ value }}</option>
+                                        {% else %}
+                                            <option value="{{ key }}">{{ value }}</option>
+                                        {% endif %}
                                         {% endfor %}
                                     </select>
                                 </div>
@@ -61,18 +70,24 @@
                             <div class="row">
                                 <div class="mb-3 col-md-8">
                                     <label class="form-label">Description</label>
-                                    <textarea class="form-control" rows="2" name="description"  placeholder="Textarea" value="{{ project.description }}"></textarea>
+                                    <textarea class="form-control" rows="2" name="description"  placeholder="Textarea" value="{{ project.description }}">{{ project.description }}</textarea>
                                 </div>
                                 <div class="mb-3 col-md-2">
                                     <label class="form-label" for="inputState">Members</label>
                                     {% for user in users %}
                                     <label class="form-check m-0">
-                                        <input type="checkbox" name="userlist[]" value="{{ user.id }}" class="form-check-input">
-                                        {% if user.first_name == '' %}
-                                            <span class="form-check-label">{{ user.username }}</span>
-                                        {% else %}
-                                            <span class="form-check-label">{{ user.first_name }} {{ user.last_name }}</span>
-                                        {% endif %}
+                                        {%for prouser in project.users.all %}
+                                            {% if user == prouser %}
+                                                {% if user.first_name == '' %}
+                                                    <span class="form-check-label">{{ user.username }}</span>
+                                                {% else %}
+                                                    <span class="form-check-label">{{ user.first_name }} {{ user.last_name }}</span>
+                                                {% endif %}
+                                                <input type="checkbox" name="userlist[]" value="{{ user.id }}" class="form-check-input" checked="">
+                                            {% else %}
+                                                <input type="checkbox" name="userlist[]" value="{{ user.id }}" class="form-check-input">
+                                            {% endif %}
+                                        {% endfor %}
                                     </label>
                                     {% endfor %}
                                 </div>

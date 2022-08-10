@@ -24,7 +24,11 @@
 					<div class="card-body">
 						<h5 class="h6 card-title">Skills</h5>
 						{% for skill in skills %}
-							<a href="" class="badge bg-primary me-1 my-1">{{ skill.title }}</a>
+							{% if skill %}
+								<a href="" class="badge bg-primary me-1 my-1">{{ skill.title }}</a>
+							{% else %}
+								No skills added yet
+							{% endif %}
 						{% endfor %}
 					</div>
 					<hr class="my-0" />
@@ -55,11 +59,19 @@
 					<div class="card-body h-100">
 						<div class="mb-3">
 							<label class="form-label">Bio</label>
-							<p>{{ profile.bio }}</p>
+							{% if profile.bio %}
+								<p>{{ profile.bio }}</p>
+							{% else %}
+								<p>No bio about you here yet</p>
+							{% endif %}
 						</div>
 						<div class="mb-3">
 							<label class="form-label">Description</label>
-							<p>{{ profile.description }}</p>
+							{% if profile.description %}
+								<p>{{ profile.description }}</p>
+							{% else %}
+								<p>No description about you here yet</p>
+							{% endif %}
 						</div>
 					</div>
 				</div>

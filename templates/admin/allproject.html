@@ -12,8 +12,8 @@
                 {% for project in projects %}
                     <div class="col-12 col-md-6 col-lg-3">
                         <div class="card">
-                            {% if project.profile_image %}
-                            <img class="card-img-top" src="{{ project.profile_image.url }}" alt="Unsplash">
+                            {% if project.profile_image != '' %}
+                                <img class="card-img-top" src="{{ project.profile_image.url }}">
                             {% endif%}
                             
                             <div class="card-header px-4 pt-4">

@@ -1,6 +1,8 @@
 from datetime import datetime
 from django.shortcuts import render, HttpResponseRedirect, redirect
 from django.views import View
+
+from core_utils.models import NotificationModel
 from .models import *
 from authentication.models import *
 from django.urls import reverse
@@ -14,9 +16,9 @@ class DashboardAdmin(View):
     def get(self, request):
         mytask = Task.objects.filter(assign__id__exact=request.user.id)
         users_staf = User.objects.filter(is_staff=True)
-        complet_work = Project.objects.filter(status='Done')
+        complet_work = Project.objects.filter(status='Done', users__id__contains=request.user.id)
         new_work = Project.objects.filter(status='Pending').count()
-        all_project = Project.objects.all()
+        all_project = Project.objects.filter(users__id__contains=request.user.id).exclude(status="Done").order_by('-created_on')
             
                 
         context = {
@@ -53,17 +55,13 @@ class AddProject(View):
         startdate = request.POST['startdate']
         enddate = request.POST['enddate']
         selectedusers = request.POST.getlist('userlist[]')
+        imagefile = request.FILES.get('imagefile')
         
-        if request.FILES['imagefile']:
-            imagefile = request.FILES['imagefile']
-        else:
-            imagefile = ''
-            
         users = User.objects.filter(id__in=selectedusers)
-            
         
         try:
             project = Project.objects.create(creater=request.user, title=title, status=stat,priority=prior,start_date=startdate, due_date=enddate)
+            
             if stat == "Done":
                 project.progress = 100
             elif stat == "Working":
@@ -72,13 +70,19 @@ class AddProject(View):
                 project.progress = 0
             else:
                 project.progress = 15
+            
+            notification = NotificationModel.objects.create(notification_type=2, title=f"New project - {title}", project=project)
                 
             for user in users:
                 project.users.add(user)
-                
-            project.profile_image = imagefile
+                notification.message = f"Hello {user.first_name}, You've been added to a new project"
+                notification.to_user = user
+            if imagefile != None:
+                project.profile_image = imagefile
+            
             project.description = description
             project.save()
+            notification.save()
             messages.success(request, 'Project Added Successfully')
         except:
             messages.error(request, 'Error adding new Project')
@@ -100,24 +104,63 @@ class ProjectDetail(View):
         return render(request, 'admin/editproject.html', context)
     
     def post(self, request, id):
-        pass
-
-
+        title = request.POST['title']
+        description = request.POST['description']
+        stat = request.POST['stat']
+        prior = request.POST['prior']
+        startdate = request.POST['startdate']
+        enddate = request.POST['enddate']
+        selectedusers = request.POST.getlist('userlist[]')
+        imagefile = request.FILES.get('imagefile')
+            
+        users = User.objects.filter(id__in=selectedusers)
+            
+        try:
+            project = Project.objects.get(id=id)
+            project.title=title
+            project.status=stat
+            project.priority=prior
+            project.start_date=startdate
+            project.due_date=enddate
+            if stat == "Done":
+                project.progress = 100
+            elif stat == "Working":
+                project.progress = 35
+            elif stat == "Cancel":
+                project.progress = 0
+            else:
+                project.progress = 15
+                
+            for user in users:
+                project.users.add(user)
+            if imagefile != None:
+                project.profile_image = imagefile
+            project.description = description
+            project.save()
+            messages.success(request, 'Project Added Successfully')
+        except:
+            messages.error(request, 'Error adding new Project')
+        return redirect('edit-project', id=project.id)
+    
+    
+    
+    
 
 def finishProject(request, id):
     try:
         project = Project.objects.get(id=id)
         project.status = "Done"
+        project.progress = 100
         project.due = "Done"
         project.save()
         messages.success(request, f"{project.title} is set to completed")
     except:
         messages.warning(request, "Project does not exists")
-    return HttpResponseRedirect('allproject')
+    return HttpResponseRedirect(reverse('admindash'))
 
 
 def allProject(request):
-    all_project = Project.objects.all()
+    all_project = Project.objects.all().order_by('-created_on')
     context = {
         'projects': all_project,
     }
@@ -197,7 +240,7 @@ class ViewTask(View):
             projects = Project.objects.filter(users__id__exact=user.id)
             for obj in projects:
                 project = obj.id
-            tasks = Task.objects.filter(assign__id__exact=user.id, project__id__exact=project)
+            tasks = Task.objects.filter(assign__id__exact=user.id, project__id__exact=project).order_by('-id')
             context = {
                 'profile': profile,
                 'projects': projects,
@@ -239,7 +282,7 @@ class EditTask(View):
         title = request.POST['title']
         stat = request.POST['status']
         prior = request.POST['prior']
-        due = request.POST['due']
+        duefield = request.POST['due']
         selectedusers = request.POST.getlist('userlist[]')
             
         users = User.objects.filter(id__in=selectedusers)
@@ -252,7 +295,7 @@ class EditTask(View):
             elif project.start_date > project.due_date:
                 task.due = "Overdue"
             else:
-                task.due = due
+                task.due = duefield
             
             task.task_name=title
             task.priority=prior
@@ -279,3 +322,27 @@ class EditTask(View):
         except:
             messages.error(request, 'Error updating task')
         return HttpResponseRedirect(reverse('alltask'))
+    
+
+def finishTask(request, id):
+    try:
+        project = Project.objects.get(id=id)
+        project.status = "Done"
+        project.progress = 100
+        project.due = "Done"
+        project.save()
+        messages.success(request, f"{project.title} is set to completed")
+    except:
+        messages.warning(request, "Project does not exists")
+    return HttpResponseRedirect(reverse('admindash'))
+
+    
+
+def deleteTask(request, id):
+    try:
+        project = Project.objects.get(id=id)
+        project.delete()
+        messages.success(request, "Project has been successfully deleted")
+    except:
+        messages.warning(request, "Project does not exists")
+    return redirect('allproject')

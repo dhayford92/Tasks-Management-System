@@ -41,18 +41,24 @@
           <i class="align-middle" data-feather="book-open"></i> <span class="align-middle">My Tasks</span>
         </a>
       </li>
+      <li class="sidebar-item">
+        <a class="sidebar-link" href="{% url 'chats' %}">
+          <i class="align-middle" data-feather="message-circle"></i> <span class="align-middle">Chats</span>
+        </a>
+      </li>
 
       <li class="sidebar-item">
         <a class="sidebar-link" href="{% url 'addproject' %}">
           <i class="align-middle" data-feather="edit"></i> <span class="align-middle">Add Project</span>
         </a>
       </li>
-
+      {% if request.user.is_superuser %}
       <li class="sidebar-item">
         <a class="sidebar-link" href="{% url 'addusers' %}">
           <i class="align-middle" data-feather="user-plus"></i> <span class="align-middle">Add Members</span>
         </a>
       </li>
+      {% endif %}
       <li class="sidebar-item">
         <a class="sidebar-link" href="{% url 'settings' %}">
           <i class="align-middle" data-feather="settings"></i> <span class="align-middle">Settings</span>

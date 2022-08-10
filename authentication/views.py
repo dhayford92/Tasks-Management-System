@@ -4,7 +4,6 @@ from .models import Profile, Skills
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
-from django.core.files.storage import FileSystemStorage
 
 
 class Login(View):
@@ -30,7 +29,7 @@ class Login(View):
 
 def logout_user(request):
     logout(request)
-    return HttpResponseRedirect('main')
+    return redirect('login')
 
 
 
@@ -50,8 +49,6 @@ class SetName(View):
             user.first_name = firstname
             user.last_name = lastname
             user.save()
-            # fss = FileSystemStorage()
-            # file = fss.save(imagefile.name, imagefile)
             profile.profile_image = imagefile
             profile.save()
             
@@ -170,18 +167,46 @@ class AllUsers(View):
         user = request.GET.get('user')
         users = User.objects.all()
         profiles = Profile.objects.all()
-        if user == '':
+        if user == None:
             profile = Profile.objects.get(user=request.user)
         else:
-            for usid in users:
-                usID = usid.id
-            profile = Profile.objects.get(user__id__exact=usID)
+            profile = Profile.objects.get(user__id__exact=user)
            
         context = {
             'profiles': profiles,
             'profile': profile
         }
         return render(request, 'admin/allusers.html', context)
+
+
+
+def changePassword(request):
+    if request.method == "POST":
+        password = request.POST.get('password')
+        newpassword = request.POST.get('newpassword')
+        conpassword = request.POST.get('conpassword')
+        
+        user = User.objects.get(id=request.user.id)
+        
+        if not user.check_password(password):
+            messages.error(request, 'Wrong old password')
+            return HttpResponseRedirect('settings')
+        else:
+            if newpassword != password:
+                if newpassword == conpassword:
+                    user.set_password(newpassword)
+                    user.save()
+                    messages.success(request, 'Password Change Successfully')
+                    return redirect('login')
+                else:
+                    messages.warning(request, 'Password do not match')
+                    return HttpResponseRedirect('settings')
+            else:
+                messages.warning(request, 'Same old password cannot be used again!')
+                return HttpResponseRedirect('settings')
+    else:
+        messages.error(request, 'Invalid Request Form')
+        return HttpResponseRedirect('settings')
     
     
     

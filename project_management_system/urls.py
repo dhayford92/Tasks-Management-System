@@ -7,6 +7,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('authentication.urls')),
     path('main/', include('mainapp.urls')),
+    path('utils/', include('core_utils.urls')),
 ]
 
 admin.site.site_header = "PMS"
